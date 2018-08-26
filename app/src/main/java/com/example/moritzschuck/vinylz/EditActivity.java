@@ -1,52 +1,39 @@
 package com.example.moritzschuck.vinylz;
 
 import android.Manifest;
+import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
-import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
-import android.util.Log;
-import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.security.Provider;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -60,10 +47,16 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
     Geocoder geocoder;
     TextView locationText;
     String location, imagePath;
-    Vinyl newVinyl;
+    Platte newVinyl;
     Button addButton;
-    EditText editBand, editYear, editPrice;
+    EditText editTitle,editBand, editYear, editPrice, editEdition, editGenre;
     ImageView mImageView;
+    Switch switchFav;
+    boolean isFavorite;
+    final String DATABASE_NAME = "plattenDB";
+    PlatteDatabase platteDatabase;
+
+
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_TAKE_PHOTO = 1;
@@ -77,6 +70,12 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.edit_main);
         toolbar = (Toolbar) (findViewById(R.id.toolbar));
         setSupportActionBar(toolbar);
+        toolbar.showOverflowMenu();
+        setupUI();
+        initDB();
+
+
+
         //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         //ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -109,6 +108,28 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
         }
 
         mImageView = (ImageView)findViewById(R.id.thumbnail);
+        mImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        switchFav = (Switch)findViewById(R.id.switchFav);
+        switchFav.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    isFavorite = true;
+
+                 Toast.makeText(getApplicationContext(), "Marked as a Favorite", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    isFavorite = false;
+                }
+            }
+        });
+
 
         coverLoadCamera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,7 +153,7 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
                                 photoFile);
                         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
 
-                        startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+                        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
                     }
                 }
 
@@ -162,34 +183,83 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View v) {
 
-                editBand = (EditText)(findViewById(R.id.bandEdit));
-                editPrice = (EditText)(findViewById(R.id.priceEdit));
-                editYear = (EditText)(findViewById(R.id.yearEdit));
-
-                String bandname = editBand.getText().toString();
-                String price = editPrice.getText().toString();
-                String year = editYear.getText().toString();
+                addVinyl();
 
                 //newVinyl = new Vinyl();
                 //addToDatabase
-                Intent intent = new Intent(EditActivity.this, MainActivity.class);
+
+               // Intent intent = new Intent(EditActivity.this, MainActivity.class);
+               // startActivity(intent);
+
+
             }
         });
 
     }
 
+    private void setupUI() {
+        editBand = (EditText)(findViewById(R.id.bandEdit));
+        editTitle = (EditText)(findViewById(R.id.titleEdit));
+        editPrice = (EditText)(findViewById(R.id.priceEdit));
+        editYear = (EditText)(findViewById(R.id.yearEdit));
+        editEdition = (EditText)(findViewById(R.id.editionEdit));
+        editGenre = (EditText)(findViewById(R.id.genreEdit));
+    }
+
+    private void addVinyl() {
+        final String title = editTitle.getText().toString();
+        final String bandname = editBand.getText().toString();
+       /* final String price = editPrice.getText().toString();
+        final String year = editYear.getText().toString();
+        final String edition = editEdition.getText().toString();
+        final String genre = editGenre.getText().toString();*/
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Platte newVinyl = new Platte();
+               // newVinyl.setYear(year);
+               // newVinyl.setPrice(price);
+               // newVinyl.setEdition(edition);
+               // newVinyl.setCondition(genre);
+               // newVinyl.setCoverSrc(imagePath);
+                newVinyl.setTitle(title);
+                newVinyl.setBand(bandname);
+               // newVinyl.setLocation(location);
+
+                platteDatabase.daoAccess().insertPlatte(newVinyl);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        editBand.setText("");
+                        editTitle.setText("");
+                    }
+                });
+            }
+        }).start();
+    }
+
+    private void initDB() {
+
+    platteDatabase = Room.databaseBuilder(getApplicationContext(), PlatteDatabase.class, DATABASE_NAME).fallbackToDestructiveMigration().build();
+    }
+
 
     private String populateAddress() {
+
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
         double latitude;
         double longitude;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }else {
-            if(locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)!=null){
+
+            if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)&& locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)!=null) {
                 //Fehler abfangen, falls Netzwerk nicht verfügbar ist.
                 Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
                 latitude = location.getLatitude();
                 longitude = location.getLongitude();
                 geocoder = new Geocoder(this, Locale.getDefault());
@@ -204,7 +274,9 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
                 return city;
 
             } else {
-                locationText.setText("Dein Standort konnte nicht lokalisiert werden");
+                Toast.makeText(getApplicationContext(), "Der Standort konnte nicht lokalisiert werden", Toast.LENGTH_SHORT).show();
+                return null;
+
 
             }
 
@@ -218,6 +290,7 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
         }
         return null;
     }
+
 
 
     @Override
@@ -236,12 +309,16 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             //Thumbnail bekommen und anzeigen?
+           Bitmap imageBitmap = BitmapFactory.decodeFile(imagePath, null);
+            mImageView.setImageBitmap(imageBitmap);
+            galleryAddPic();
+
         }
         else if(requestCode==REQUEST_GALLERY && resultCode == RESULT_OK){
            Uri selectedImageUri = data.getData();
+           imagePath = selectedImageUri.getPath();
            //Pfad abgreifen?
             mImageView.setImageURI(selectedImageUri);
-
         }
             }
 
