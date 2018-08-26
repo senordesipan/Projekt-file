@@ -185,13 +185,8 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
 
                 addVinyl();
 
-                //newVinyl = new Vinyl();
-                //addToDatabase
-
                // Intent intent = new Intent(EditActivity.this, MainActivity.class);
                // startActivity(intent);
-
-
             }
         });
 
@@ -224,6 +219,7 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
                // newVinyl.setCoverSrc(imagePath);
                 newVinyl.setTitle(title);
                 newVinyl.setBand(bandname);
+                newVinyl.setPlattenID(1);
                // newVinyl.setLocation(location);
 
                 platteDatabase.daoAccess().insertPlatte(newVinyl);
@@ -231,7 +227,7 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        editBand.setText("");
+                        editBand.setText("k");
                         editTitle.setText("");
                     }
                 });

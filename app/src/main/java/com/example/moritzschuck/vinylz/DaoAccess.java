@@ -11,7 +11,7 @@ import android.arch.persistence.room.Query;
 public interface DaoAccess {
 
     @Insert
-    void insertOnlySingleFriend(Platte p);
+    void insertPlatte(Platte p);
 
     @Query("SELECT * FROM Platte WHERE plattenID =:plattenID")
     Platte findPlatteByID(String plattenID);
