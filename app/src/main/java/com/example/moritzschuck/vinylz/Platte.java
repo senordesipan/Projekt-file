@@ -14,16 +14,12 @@ public class Platte {
     @NonNull
     @PrimaryKey (autoGenerate = true)
 
-    private long plattenID;
+    private int plattenID;
     private String title, band, year, location, price, edition, genre, coverSrc;
     private boolean fav;
 
-    public Platte(){
-
-    }
-
     @NonNull
-    public long getPlattenID() {
+    public int getPlattenID() {
         return plattenID;
     }
     public String getTitle() {
@@ -55,7 +51,7 @@ public class Platte {
     }
 
 
-    public void setPlattenID(@NonNull long plattenID) {
+    public void setPlattenID(@NonNull int plattenID) {
         this.plattenID = plattenID;
     }
     public void setTitle(String title) {
@@ -84,6 +80,10 @@ public class Platte {
     }
     public void setFav(boolean fav){
         this.fav = fav;
+    }
+
+    public Platte(){
+
     }
 
 

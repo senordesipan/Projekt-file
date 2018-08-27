@@ -43,21 +43,21 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
 
     Toolbar toolbar;
     ImageButton coverLoad, coverLoadCamera, locationButton;
-    List<Address> adresses;
-    Geocoder geocoder;
     TextView locationText;
-    Platte newVinyl;
     Button addButton;
-    EditText editTitle,editBand, editYear, editPrice, editEdition, editGenre;
+    EditText editTitle, editBand, editYear, editPrice, editEdition, editGenre;
     ImageView mImageView;
     Switch switchFav;
 
+    Platte newVinyl;
     boolean isFavorite;
     String location, imagePath;
+    List<Address> adresses;
 
     PlatteDatabase platteDatabase;
+    Geocoder geocoder;
 
-    final String DATABASE_NAME = "plattenDB";
+    final String DATABASE_NAME = "platteDB";
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_TAKE_PHOTO = 1;
     static final int REQUEST_GALLERY = 0;
@@ -68,13 +68,9 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_main);
-        toolbar = (Toolbar) (findViewById(R.id.toolbar));
-        setSupportActionBar(toolbar);
-        toolbar.showOverflowMenu();
+        initToolbar();
         setupUI();
         initDB();
-
-
 
         //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -191,19 +187,25 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
                 final String edition = editEdition.getText().toString();
                 final String genre = editGenre.getText().toString();
 
-                if((!bandname.equals("") && !title.equals(""))) {
-                    addVinyl(title, bandname, year, price, edition, genre, " 123"," 123", true);
+                if((!bandname.equals("") && !title.equals(""))) /*Wird noch weitergeführt, gerade zu faul ;)*/ {
+                    addVinyl(title, bandname, year, price, edition, genre, imagePath,location, isFavorite);
                     Toast.makeText(getApplicationContext(), "Successfully added new Vinyl in Database", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(EditActivity.this, MainActivity.class);
                     startActivity(intent);
                 }else{
-                    Toast.makeText(getApplicationContext(), "Fill in the missing things", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Fill in the missing fields!", Toast.LENGTH_SHORT).show();
                 }
 
 
             }
         });
 
+    }
+
+    private void initToolbar() {
+        toolbar = (Toolbar) (findViewById(R.id.toolbar));
+        setSupportActionBar(toolbar);
+        toolbar.showOverflowMenu();
     }
 
     private void setupUI() {
@@ -215,8 +217,12 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
         editGenre = (EditText)(findViewById(R.id.genreEdit));
     }
 
-    private void addVinyl(final String title, final String bandname, final String year, final String price, final String edition, final String genre, final String imagePath, final String location, final boolean isFavorite) {
+    private void initDB() {
 
+        platteDatabase = Room.databaseBuilder(getApplicationContext(), PlatteDatabase.class, DATABASE_NAME).fallbackToDestructiveMigration().build();
+    }
+
+    private void addVinyl(final String title, final String bandname, final String year, final String price, final String edition, final String genre, final String imagePath, final String location, final boolean isFavorite) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -232,22 +238,14 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
                 newVinyl.setLocation(location);
                 newVinyl.setFav(isFavorite);
 
-                newVinyl.setPlattenID(platteDatabase.daoAccess().insertPlatte(newVinyl));
+                platteDatabase.daoAccess().insertPlatte(newVinyl);
 
-                EditActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                    public void run() {
 
-                    }
-                });
             }
         }).start();
     }
 
-    private void initDB() {
 
-    platteDatabase = Room.databaseBuilder(getApplicationContext(), PlatteDatabase.class, DATABASE_NAME).fallbackToDestructiveMigration().build();
-    }
 
 
     private String populateAddress() {

@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -25,6 +27,11 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     ImageButton addButton;
+       Button searchButton;
+       EditText searchField;
+       Platte newPlatte;
+       TextView example;
+       //Testfeld, kommt noch weg
 
     private List<Platte> myVinyl = new ArrayList<Platte>();
 
@@ -53,15 +60,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(intent);
             }
         });
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                exampleVinylList();
+                populateListView();
+            }
+        });
 
-        //exampleVinylList();
-       // populateListView();
     }
 
     private void exampleVinylList() {
-        Platte newPlatte;
-       newPlatte = platteDatabase.daoAccess().findPlatteByTitle("abc");
-       myVinyl.add(newPlatte);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                Platte newPlatte;
+                newPlatte = platteDatabase.daoAccess().findPlatteByTitle(searchField.getText().toString());
+                //hier ist der Fehler schätze ich
+                if(newPlatte!=null) {
+                    myVinyl.add(newPlatte);
+                    example.setText(newPlatte.getTitle());
+                }else{
+                    Toast.makeText(getApplicationContext(), "Couldn't find Vinyl with this Title", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).start();
 
 
     }
@@ -74,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(MainActivity.this, DetailView.class);
                 //intent.putExtra("vID", position);
+                //hier möchte ich die Id des ausgewähltem Objektes in die Detailview nehmen, how?
                 startActivity(intent);
             }
         });
@@ -82,6 +108,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void setupUi() {
 
         addButton = (ImageButton) (findViewById(R.id.addButton));
+        searchButton = (Button)(findViewById(R.id.searchButton));
+        searchField = (EditText)(findViewById(R.id.searchField));
+        example = (TextView)(findViewById(R.id.exampleText));
     }
 
     @Override
@@ -138,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Add data to the intent, the receiving app will decide
             // what to do with it.
             share.putExtra(Intent.EXTRA_SUBJECT, "Meine neue App: Vinylz");
-            share.putExtra(Intent.EXTRA_TEXT, "http://www.uni-regensburg.com");
+            share.putExtra(Intent.EXTRA_TEXT, "Mit dieser App kannst du alle deine Platten Teilen! Ist das nicht super!");
 
             startActivity(Intent.createChooser(share, "Tell your Friend about your new App!"));
 
@@ -155,6 +184,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             super(MainActivity.this, R.layout.item_view, myVinyl);
         }
 
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             // Make sure we have a view to work with (may have been given null)
@@ -165,25 +195,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             // Find the car to work with.
            Platte currentVinyl = myVinyl.get(position);
+            //Hier versuche ich den ganzen shit aus dem Objekt zu extrahieren
 
             if(currentVinyl!=null) {
 
                 // Fill the view
                 ImageView imageView = (ImageView) itemView.findViewById(R.id.vPicture);
-                //Uri.Builder coverURI = new Uri.Builder().appendPath(currentVinyl.getCoverSrc());
-                //imageView.setImageURI(coverURI);
+                /*String path = currentVinyl.getCoverSrc();
+                Bitmap bmImg = BitmapFactory.decodeFile(path);
+                imageView.setImageBitmap(bmImg);*/
 
                 // title:
                 TextView makeText = (TextView) itemView.findViewById(R.id.vName);
-                makeText.setText(currentVinyl.getTitle() + " - " + currentVinyl.getBand());
+                String title = "" + currentVinyl.getTitle();
+                makeText.setText(title);
 
                 // price:
                 TextView yearText = (TextView) itemView.findViewById(R.id.vPrice);
                 yearText.setText("" + currentVinyl.getPrice());
 
                 // year:
-                TextView condionText = (TextView) itemView.findViewById(R.id.vLocation);
-                condionText.setText(currentVinyl.getYear());
+                TextView locationText = (TextView) itemView.findViewById(R.id.vLocation);
+                locationText.setText(currentVinyl.getYear());
             }
             else {
                 Toast.makeText(getApplicationContext(), "Nothing to show", Toast.LENGTH_SHORT).show();
