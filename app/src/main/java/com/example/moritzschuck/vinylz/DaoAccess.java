@@ -11,12 +11,12 @@ import android.arch.persistence.room.Query;
 public interface DaoAccess {
 
     @Insert
-    void insertPlatte(Platte p);
+    long insertPlatte(Platte p);
 
     @Query("SELECT * FROM Platte WHERE plattenID =:plattenID")
     Platte findPlatteByID(String plattenID);
 
-   @Query("SELECT * FROM Platte WHERE title =:title")
+    @Query("SELECT * FROM Platte WHERE title =:title")
     Platte findPlatteByTitle(String title);
 
  /*   @Query("SELECT * FROM Platte WHERE band LIKE band")

@@ -46,18 +46,18 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
     List<Address> adresses;
     Geocoder geocoder;
     TextView locationText;
-    String location, imagePath;
     Platte newVinyl;
     Button addButton;
     EditText editTitle,editBand, editYear, editPrice, editEdition, editGenre;
     ImageView mImageView;
     Switch switchFav;
+
     boolean isFavorite;
-    final String DATABASE_NAME = "plattenDB";
+    String location, imagePath;
+
     PlatteDatabase platteDatabase;
 
-
-
+    final String DATABASE_NAME = "plattenDB";
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_TAKE_PHOTO = 1;
     static final int REQUEST_GALLERY = 0;
@@ -183,10 +183,24 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View v) {
 
-                addVinyl();
 
-               // Intent intent = new Intent(EditActivity.this, MainActivity.class);
-               // startActivity(intent);
+                final String title = editTitle.getText().toString();
+                final String bandname = editBand.getText().toString();
+                final String price = editPrice.getText().toString();
+                final String year = editYear.getText().toString();
+                final String edition = editEdition.getText().toString();
+                final String genre = editGenre.getText().toString();
+
+                if((!bandname.equals("") && !title.equals(""))) {
+                    addVinyl(title, bandname, year, price, edition, genre, " 123"," 123", true);
+                    Toast.makeText(getApplicationContext(), "Successfully added new Vinyl in Database", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(EditActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(getApplicationContext(), "Fill in the missing things", Toast.LENGTH_SHORT).show();
+                }
+
+
             }
         });
 
@@ -201,34 +215,29 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
         editGenre = (EditText)(findViewById(R.id.genreEdit));
     }
 
-    private void addVinyl() {
-        final String title = editTitle.getText().toString();
-        final String bandname = editBand.getText().toString();
-       /* final String price = editPrice.getText().toString();
-        final String year = editYear.getText().toString();
-        final String edition = editEdition.getText().toString();
-        final String genre = editGenre.getText().toString();*/
+    private void addVinyl(final String title, final String bandname, final String year, final String price, final String edition, final String genre, final String imagePath, final String location, final boolean isFavorite) {
+
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Platte newVinyl = new Platte();
-               // newVinyl.setYear(year);
-               // newVinyl.setPrice(price);
-               // newVinyl.setEdition(edition);
-               // newVinyl.setCondition(genre);
-               // newVinyl.setCoverSrc(imagePath);
+                newVinyl = new Platte();
+
+                newVinyl.setYear(year);
+                newVinyl.setPrice(price);
+                newVinyl.setEdition(edition);
+                newVinyl.setGenre(genre);
+                newVinyl.setCoverSrc(imagePath);
                 newVinyl.setTitle(title);
                 newVinyl.setBand(bandname);
-                newVinyl.setPlattenID(1);
-               // newVinyl.setLocation(location);
+                newVinyl.setLocation(location);
+                newVinyl.setFav(isFavorite);
 
-                platteDatabase.daoAccess().insertPlatte(newVinyl);
+                newVinyl.setPlattenID(platteDatabase.daoAccess().insertPlatte(newVinyl));
 
-                runOnUiThread(new Runnable() {
-                    @Override
+                EditActivity.this.runOnUiThread(new Runnable() {
+                @Override
                     public void run() {
-                        editBand.setText("k");
-                        editTitle.setText("");
+
                     }
                 });
             }

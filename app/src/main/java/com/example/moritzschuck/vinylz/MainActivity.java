@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,17 +54,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        exampleVinylList();
-        populateListView();
+        //exampleVinylList();
+       // populateListView();
     }
 
     private void exampleVinylList() {
-      /*  Vinyl metallica = new Vinyl("Black Album", "Metallica", "1998", "25 €", R.drawable.metallica);
-        Vinyl metronomy = new Vinyl("The Bay", "Metronomy", "2014", "30 €", R.drawable.metronomy);
+        Platte newPlatte;
+       newPlatte = platteDatabase.daoAccess().findPlatteByTitle("abc");
+       myVinyl.add(newPlatte);
 
-        myVinyl.add(metallica);
-        myVinyl.add(metronomy);
-        myVinyl.add(metronomy);*/
+
     }
     private void populateListView() {
         ArrayAdapter<Platte> adapter = new MyListAdapter();
@@ -164,26 +164,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
             // Find the car to work with.
-            final String search = "abc";
-            Platte resultPlatte;
-            resultPlatte = platteDatabase.daoAccess().findPlatteByTitle(search);
+           Platte currentVinyl = myVinyl.get(position);
 
-            // Fill the view
-            ImageView imageView = (ImageView)itemView.findViewById(R.id.vPicture);
-            //Uri.Builder coverURI = new Uri.Builder().appendPath(currentVinyl.getCoverSrc());
-            //imageView.setImageURI(coverURI);
+            if(currentVinyl!=null) {
 
-            // title:
-            TextView makeText = (TextView) itemView.findViewById(R.id.vName);
-            makeText.setText(resultPlatte.getTitle() +" - "+ resultPlatte.getBand());
+                // Fill the view
+                ImageView imageView = (ImageView) itemView.findViewById(R.id.vPicture);
+                //Uri.Builder coverURI = new Uri.Builder().appendPath(currentVinyl.getCoverSrc());
+                //imageView.setImageURI(coverURI);
 
-            // price:
-        //    TextView yearText = (TextView) itemView.findViewById(R.id.vPrice);
-        //    yearText.setText("" + currentVinyl.getPrice());
+                // title:
+                TextView makeText = (TextView) itemView.findViewById(R.id.vName);
+                makeText.setText(currentVinyl.getTitle() + " - " + currentVinyl.getBand());
 
-            // year:
-         //   TextView condionText = (TextView) itemView.findViewById(R.id.vLocation);
-         //   condionText.setText(currentVinyl.getYear());
+                // price:
+                TextView yearText = (TextView) itemView.findViewById(R.id.vPrice);
+                yearText.setText("" + currentVinyl.getPrice());
+
+                // year:
+                TextView condionText = (TextView) itemView.findViewById(R.id.vLocation);
+                condionText.setText(currentVinyl.getYear());
+            }
+            else {
+                Toast.makeText(getApplicationContext(), "Nothing to show", Toast.LENGTH_SHORT).show();
+            }
 
             return itemView;
         }

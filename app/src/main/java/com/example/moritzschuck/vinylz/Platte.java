@@ -14,12 +14,16 @@ public class Platte {
     @NonNull
     @PrimaryKey (autoGenerate = true)
 
-    private int plattenID;
-    private String title, band; //, year, location, price, edition, condition, coverSrc;
-    //private boolean fav;
+    private long plattenID;
+    private String title, band, year, location, price, edition, genre, coverSrc;
+    private boolean fav;
+
+    public Platte(){
+
+    }
 
     @NonNull
-    public int getPlattenID() {
+    public long getPlattenID() {
         return plattenID;
     }
     public String getTitle() {
@@ -28,7 +32,7 @@ public class Platte {
     public String getBand() {
         return band;
     }
-   /* public String getYear() {
+    public String getYear() {
         return year;
     }
     public String getLocation() {
@@ -40,18 +44,18 @@ public class Platte {
     public String getEdition() {
         return edition;
     }
-    public String getCondition() {
-        return condition;
+    public String getGenre() {
+        return genre;
     }
     public String getCoverSrc() {
         return coverSrc;
     }
-    public boolean getFavorite(){
+    public boolean getFav(){
         return fav;
-    }*/
+    }
 
 
-    public void setPlattenID(@NonNull int plattenID) {
+    public void setPlattenID(@NonNull long plattenID) {
         this.plattenID = plattenID;
     }
     public void setTitle(String title) {
@@ -60,7 +64,7 @@ public class Platte {
     public void setBand(String band) {
         this.band = band;
     }
-    /*public void setYear(String year) {
+    public void setYear(String year) {
         this.year = year;
     }
     public void setLocation(String location) {
@@ -72,18 +76,16 @@ public class Platte {
     public void setEdition(String edition) {
         this.edition = edition;
     }
-    public void setCondition(String condition) {
-        this.condition = condition;
+    public void setGenre(String genre) {
+        this.genre = genre;
     }
     public void setCoverSrc(String coverSrc) {
         this.coverSrc = coverSrc;
     }
-    public void setFav(){
+    public void setFav(boolean fav){
         this.fav = fav;
-    }*/
-
-    public Platte(){
-
     }
+
+
 
 }
