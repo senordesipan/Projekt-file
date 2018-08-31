@@ -70,7 +70,7 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.edit_main);
         initToolbar();
         setupUI();
-        initDB();
+       // initDB();
 
         //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -160,8 +160,8 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
                 String imageFileName = "JPEG_" + timeStamp + "_";
                 File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                 File image = File.createTempFile(
-                        imageFileName,  /* prefix */
-                        ".jpg",         /* suffix */
+                        imageFileName,   /* prefix */
+                        ".jpg",   /* suffix */
                         storageDir      /* directory */
                 );
 
@@ -179,7 +179,6 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View v) {
 
-
                 final String title = editTitle.getText().toString();
                 final String bandname = editBand.getText().toString();
                 final String price = editPrice.getText().toString();
@@ -189,6 +188,7 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
 
                 if((!bandname.equals("") && !title.equals(""))) /*Wird noch weitergeführt, gerade zu faul ;)*/ {
                     addVinyl(title, bandname, year, price, edition, genre, imagePath,location, isFavorite);
+
                     Toast.makeText(getApplicationContext(), "Successfully added new Vinyl in Database", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(EditActivity.this, MainActivity.class);
                     startActivity(intent);
@@ -227,7 +227,6 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void run() {
                 newVinyl = new Platte();
-
                 newVinyl.setYear(year);
                 newVinyl.setPrice(price);
                 newVinyl.setEdition(edition);
@@ -237,16 +236,10 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
                 newVinyl.setBand(bandname);
                 newVinyl.setLocation(location);
                 newVinyl.setFav(isFavorite);
-
-                platteDatabase.daoAccess().insertPlatte(newVinyl);
-
-
+                PlatteDatabase.getInstance(getApplicationContext()).daoAccess().insertPlatte(newVinyl);
             }
         }).start();
     }
-
-
-
 
     private String populateAddress() {
 
@@ -279,8 +272,6 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
             } else {
                 Toast.makeText(getApplicationContext(), "Der Standort konnte nicht lokalisiert werden", Toast.LENGTH_SHORT).show();
                 return null;
-
-
             }
 
             //    ActivityCompat#requestPermissions

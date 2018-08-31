@@ -1,25 +1,48 @@
 package com.example.moritzschuck.vinylz;
 
+import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
-
-/**
- * Created by cip on 13.08.2018.
- */
 
 @Entity
 public class Platte {
 
     @NonNull
     @PrimaryKey (autoGenerate = true)
+    private long plattenID;
 
-    private int plattenID;
-    private String title, band, year, location, price, edition, genre, coverSrc;
-    private boolean fav;
+    @ColumnInfo(name = "title")
+    private String title;
+
+    @ColumnInfo(name = "band")
+    private String band;
+
+    @ColumnInfo(name = "year")
+    private String year;
+
+    @ColumnInfo(name = "location")
+    private String location;
+
+    @ColumnInfo(name = "price")
+    private String price;
+
+    @ColumnInfo(name = "edition")
+    private String edition;
+
+    @ColumnInfo(name = "genre")
+    private String genre;
+
+    @ColumnInfo(name = "coverSrc")
+    private String coverSrc;
 
     @NonNull
-    public int getPlattenID() {
+    @ColumnInfo(name = "fav")
+    private boolean fav;
+
+
+    @NonNull
+    public long getPlattenID() {
         return plattenID;
     }
     public String getTitle() {
@@ -46,12 +69,13 @@ public class Platte {
     public String getCoverSrc() {
         return coverSrc;
     }
+    @NonNull
     public boolean getFav(){
         return fav;
     }
 
 
-    public void setPlattenID(@NonNull int plattenID) {
+    public void setPlattenID(@NonNull long plattenID) {
         this.plattenID = plattenID;
     }
     public void setTitle(String title) {
@@ -78,7 +102,7 @@ public class Platte {
     public void setCoverSrc(String coverSrc) {
         this.coverSrc = coverSrc;
     }
-    public void setFav(boolean fav){
+    public void setFav(@NonNull boolean fav){
         this.fav = fav;
     }
 
