@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,7 +23,7 @@ public class DetailView extends AppCompatActivity
     ImageView coverImage, favHeart, favHeartBlack;
 
     Platte currentVinyl;
-    ImageButton shareButton;
+    //ImageButton shareButton;
 
 
     @Override
@@ -112,30 +111,31 @@ public class DetailView extends AppCompatActivity
     Intent intent = getIntent();
     Bundle b= intent.getExtras();
 
-    return b.getLong("vKey");
+        assert b != null;
+        return b.getLong("vKey");
 
     }
 
     private void setupUI() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        titleView = (TextView)(findViewById(R.id.titleView));
-        yearView = (TextView)(findViewById(R.id.yearView));
-        priceView = (TextView)(findViewById(R.id.priceView));
-        locationView = (TextView)(findViewById(R.id.locationView));
-        genreView = (TextView)(findViewById(R.id.genreView));
-        editionView = (TextView)(findViewById(R.id.editionView));
-        favHeart = (ImageView) (findViewById(R.id.favHeart));
-        favHeartBlack = (ImageView) (findViewById(R.id.favHeartBlack));
-        coverImage = (ImageView) (findViewById(R.id.detailCoverView));
+        titleView = findViewById(R.id.titleView);
+        yearView = findViewById(R.id.yearView);
+        priceView = findViewById(R.id.priceView);
+        locationView = findViewById(R.id.locationView);
+        genreView = findViewById(R.id.genreView);
+        editionView = findViewById(R.id.editionView);
+        favHeart = findViewById(R.id.favHeart);
+        favHeartBlack = findViewById(R.id.favHeartBlack);
+        coverImage = findViewById(R.id.detailCoverView);
         //shareButton = (ImageButton)(findViewById(R.id.shareButton));
 
 
@@ -144,7 +144,7 @@ public class DetailView extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -223,7 +223,7 @@ public class DetailView extends AppCompatActivity
 
         //}
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

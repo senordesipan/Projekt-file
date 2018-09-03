@@ -304,7 +304,6 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
         else if(requestCode==REQUEST_GALLERY && resultCode == RESULT_OK){
            Uri selectedImageUri = data.getData();
            //Pfad abgreifen?
-            Log.d("******DEBUG", selectedImageUri.getEncodedPath());
             imagePath = selectedImageUri.toString();
             mImageView.setImageURI(selectedImageUri);
         }
