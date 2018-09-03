@@ -9,4 +9,5 @@
     <string name="vinylz">Vinylz</string>
     <string name="title_activity_detail_view">DetailView</string>
     <string name="share_vinyl">Share Vinyl</string>
+    <string name="reset_library">Reset Library</string>
 </resources>

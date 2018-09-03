@@ -61,7 +61,6 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:hint="Price"
-            android:inputType="number"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/bandEdit" />
@@ -82,26 +81,28 @@
 
         <LinearLayout
             android:id="@+id/linearLayout"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editionEdit">
 
+            <EditText
+                android:id="@+id/locationText"
+                android:layout_width="292dp"
+                android:layout_height="wrap_content"
+                android:hint="Location" />
+
             <ImageButton
                 android:id="@+id/locationFinder"
-                android:layout_width="50dp"
+                android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 app:srcCompat="@android:drawable/ic_menu_mylocation" />
 
-            <TextView
-                android:id="@+id/locationText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:paddingLeft="20dp"
-                android:text="" />
+
         </LinearLayout>
 
 
@@ -141,25 +142,26 @@
 
         <ImageView
             android:id="@+id/thumbnail"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="93dp"
+            android:layout_height="91dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginStart="250dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
             app:layout_constraintEnd_toEndOf="@+id/textView9"
-            app:layout_constraintStart_toStartOf="@+id/textView9"
-            app:layout_constraintTop_toBottomOf="@+id/editionEdit" />
+            app:layout_constraintStart_toEndOf="@+id/linearLayout2"
+            app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
 
         <Button
             android:id="@+id/vinylAdd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:background="@android:color/holo_green_light"
             android:text="Create new Vinyl"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/switchFav" />
@@ -174,7 +176,7 @@
             android:text="Favorite"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/vinylAdd"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+            app:layout_constraintTop_toBottomOf="@+id/thumbnail" />
 
         <EditText
             android:id="@+id/editionEdit"

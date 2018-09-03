@@ -1,9 +1,10 @@
 package com.example.moritzschuck.vinylz;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -25,17 +26,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     ImageButton addButton, nameButton, locationButton, favoriteButton;
     Button searchButton;
     EditText searchField;
-    TextView example;
-    int searchRequest = 0;
-    //Testfeld, kommt noch weg
+    int searchRequest = 2;
 
     private List<Platte> myVinyl = new ArrayList<Platte>();
 
@@ -44,9 +43,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupUi();
-        exampleVinylList();
+
+
+        try {
+            exampleVinylList();
+        }
+        catch (Exception e) {
+
+        }
         populateListView();
         initListeners();
+
     }
 
     private void setupUi() {
@@ -58,11 +65,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         locationButton = (findViewById(R.id.locationButton));
         nameButton = findViewById(R.id.nameButton);
 
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         setSupportActionBar(toolbar);
-
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -110,8 +115,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 searchField.setHint("Search favorite Title");
                 searchRequest = 3;
                 showFavs();
-               // populateListView();
-
+                populateListView();
             }
         });
     }
@@ -127,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }).start();
 
 
-        }else if (searchRequest == 2){
+        }else if (searchRequest== 2){
 
             new Thread(new Runnable() {
                 @Override
@@ -157,40 +161,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void run() {
 
                 myVinyl = PlatteDatabase.getInstance(getApplicationContext()).daoAccess().findFavs(true);
-                Log.d("******DEBUG", myVinyl.get(0).getTitle());
+
             }
         }).start();
 
     }
 
-    private void exampleVinylList() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+    private AsyncListTask alt;
 
-                myVinyl = PlatteDatabase.getInstance(getApplicationContext()).daoAccess().selectAll();
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                    }
-                });
-
-            }
-        }).start();
-
-        final String searchtext = searchField.getText().toString();
-
-        Log.d("***DEBUG***", searchtext);
+    private class AsyncListTask extends AsyncTask<Void, Void, List<Platte>> {
+        protected List<Platte> doInBackground(Void... voids) {
+            //myVinyl.clear();
+            return PlatteDatabase.getInstance(getApplicationContext()).daoAccess().selectAll();
+        }
     }
+
+    private Void exampleVinylList() throws ExecutionException, InterruptedException {
+        alt = new AsyncListTask();
+        myVinyl = alt.execute().get();
+        Log.d("***SIZE***", String.valueOf(myVinyl.size()));
+        return null;}
 
 
     private void populateListView() {
 
-        final ArrayAdapter<Platte> adapter = new MyListAdapter();
+        final ArrayAdapter<Platte> adapter = new MyListAdapter(myVinyl);
         final ListView list = (ListView) findViewById(R.id.list);
         list.setAdapter(adapter);
+
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -205,28 +203,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }).start();
             }
         });
-        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-               new Thread(new Runnable() {
-                   @Override
-                   public void run() {
-                      PlatteDatabase.getInstance(getApplicationContext()).daoAccess().deletePlatte(myVinyl.get(position));
-                      runOnUiThread(new Runnable() {
-                          @Override
-                          public void run() {
-
-                          }
-                      });
-
-
-                   }
-               }).start();
-                return false;
-            }
-        });
     }
-
 
     @Override
     public void onBackPressed() {
@@ -256,6 +233,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.action_settings) {
             return true;
         }
+        if (id == R.id.resetLib) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    List<Platte>deleteList = PlatteDatabase.getInstance(getApplicationContext()).daoAccess().selectAll();
+                    PlatteDatabase.getInstance(getApplicationContext()).daoAccess().deleteAll(deleteList);
+                }
+            }).start();
+            try {
+                exampleVinylList();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            populateListView();
+
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -268,11 +264,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
+            Intent intent = new Intent(getApplicationContext(), EditActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
+            try {
+                exampleVinylList();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            populateListView();
 
         } else if (id == R.id.nav_share) {
             Intent share = new Intent(android.content.Intent.ACTION_SEND);
@@ -298,7 +300,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public MyListAdapter() {
             super(MainActivity.this, R.layout.item_view, myVinyl);
         }
+        public MyListAdapter(List<Platte> pList) {
+            super(MainActivity.this, R.layout.item_view, pList);
+        }
 
+        @NonNull
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             // Make sure we have a view to work with (may have been given null)
@@ -308,53 +314,62 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
             // Find the vinyl to work with.
-            final Platte currentVinyl = myVinyl.get(position);
-            //Hier versuche ich den ganzen shit aus dem Objekt zu extrahieren
+            if(!myVinyl.isEmpty()) {
+                if (myVinyl.get(position) != null) {
+                    final Platte currentVinyl = myVinyl.get(position);
+                    if (currentVinyl != null) {
 
-            if (currentVinyl != null) {
-
-                // Fill the view
-                if (currentVinyl.getCoverSrc() != null) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            File imgFile = new File(currentVinyl.getCoverSrc());
-
-                            if (imgFile.exists()) {
-
-                                final Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        ImageView myImage = (ImageView) findViewById(R.id.vPicture);
-                                        myImage.setImageBitmap(myBitmap);
-                                    }
-                                });
-
-
-                            }
+                        // Fill the view
+                        if (currentVinyl.getCoverSrc() != null) {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    final Uri uri = Uri.parse(currentVinyl.getCoverSrc());
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if(uri !=null) {
+                                                ImageView imageView = findViewById(R.id.vPicture);
+                                                imageView.setImageURI(uri);
+                                            }
+                                        }
+                                    });
+                                }
+                            }).start();
                         }
 
-                    }).start();
+                        // title:
+                        TextView makeText = (TextView) itemView.findViewById(R.id.vName);
+                        if (currentVinyl.getTitle() != null) {
+                            makeText.setVisibility(View.VISIBLE);
+                            String title = "" + currentVinyl.getTitle() + " - " + currentVinyl.getBand();
+                            makeText.setText(title);
+                        } else {
+                            makeText.setText("Unknown Title");
+                        }
+
+                        // price:
+                        TextView priceText = (TextView) itemView.findViewById(R.id.vPrice);
+                        if (currentVinyl.getPrice() == "") {
+                            priceText.setText("Unknown Price");
+                        } else {
+                            priceText.setVisibility(View.VISIBLE);
+                            priceText.setText(currentVinyl.getPrice());
+
+                        }
+
+                        // year:
+                        TextView yearText = (TextView) itemView.findViewById(R.id.vLocation);
+                        yearText.setVisibility(View.VISIBLE);
+                        yearText.setText(currentVinyl.getYear());
+                    } else {
+
+                        Toast.makeText(getApplicationContext(), "Nothing to show", Toast.LENGTH_SHORT).show();
+
+                    }
+
                 }
-
-
-                    // title:
-                    TextView makeText = (TextView) itemView.findViewById(R.id.vName);
-                    String title = "" + currentVinyl.getTitle() + " - " + currentVinyl.getBand();
-                    makeText.setText(title);
-
-                    // price:
-                    TextView yearText = (TextView) itemView.findViewById(R.id.vPrice);
-                    yearText.setText(currentVinyl.getPrice() + " €");
-
-                    // year:
-                    TextView locationText = (TextView) itemView.findViewById(R.id.vLocation);
-                    locationText.setText(currentVinyl.getYear());
-                } else {
-                    Toast.makeText(getApplicationContext(), "Nothing to show", Toast.LENGTH_SHORT).show();
-                }
-
+            }
                 return itemView;
             }
         }

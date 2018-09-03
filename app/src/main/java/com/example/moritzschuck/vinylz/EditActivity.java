@@ -1,7 +1,6 @@
 package com.example.moritzschuck.vinylz;
 
 import android.Manifest;
-import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,6 +20,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -54,12 +54,9 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
     String location, imagePath;
     List<Address> adresses;
 
-    PlatteDatabase platteDatabase;
     Geocoder geocoder;
 
-    final String DATABASE_NAME = "platteDB";
     static final int REQUEST_IMAGE_CAPTURE = 1;
-    static final int REQUEST_TAKE_PHOTO = 1;
     static final int REQUEST_GALLERY = 0;
 
 
@@ -70,7 +67,6 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.edit_main);
         initToolbar();
         setupUI();
-       // initDB();
 
         //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -79,7 +75,7 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
         //drawer.addDrawerListener(toggle);
         //toggle.syncState();
 
-        locationText = (TextView)(findViewById(R.id.locationText));
+        locationText = (EditText)(findViewById(R.id.locationText));
         locationButton = (ImageButton) (findViewById(R.id.locationFinder));
         locationButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,6 +132,7 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
                     // Create the File where the photo should go
                     File photoFile = null;
                     try {
+
                         photoFile = createImageFile();
                         //galleryAddPic();
 
@@ -185,6 +182,7 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
                 final String year = editYear.getText().toString();
                 final String edition = editEdition.getText().toString();
                 final String genre = editGenre.getText().toString();
+                final String location = locationText.getText().toString();
 
                 if((!bandname.equals("") && !title.equals(""))) /*Wird noch weitergeführt, gerade zu faul ;)*/ {
                     addVinyl(title, bandname, year, price, edition, genre, imagePath,location, isFavorite);
@@ -195,8 +193,6 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
                 }else{
                     Toast.makeText(getApplicationContext(), "Fill in the missing fields!", Toast.LENGTH_SHORT).show();
                 }
-
-
             }
         });
 
@@ -217,10 +213,6 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
         editGenre = (EditText)(findViewById(R.id.genreEdit));
     }
 
-    private void initDB() {
-
-        platteDatabase = Room.databaseBuilder(getApplicationContext(), PlatteDatabase.class, DATABASE_NAME).fallbackToDestructiveMigration().build();
-    }
 
     private void addVinyl(final String title, final String bandname, final String year, final String price, final String edition, final String genre, final String imagePath, final String location, final boolean isFavorite) {
         new Thread(new Runnable() {
@@ -305,18 +297,20 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
             //Thumbnail bekommen und anzeigen?
            Bitmap imageBitmap = BitmapFactory.decodeFile(imagePath, null);
             mImageView.setImageBitmap(imageBitmap);
-            galleryAddPic();
+            galleryAddPic(imagePath);
+            Log.d("****DEBUG",imagePath);
 
         }
         else if(requestCode==REQUEST_GALLERY && resultCode == RESULT_OK){
            Uri selectedImageUri = data.getData();
-           imagePath = selectedImageUri.getPath();
            //Pfad abgreifen?
+            Log.d("******DEBUG", selectedImageUri.getEncodedPath());
+            imagePath = selectedImageUri.toString();
             mImageView.setImageURI(selectedImageUri);
         }
             }
 
-    private void galleryAddPic() {
+    private void galleryAddPic(String imagePath) {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(imagePath);
         Uri contentUri = Uri.fromFile(f);

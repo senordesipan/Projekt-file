@@ -36,14 +36,8 @@ public interface DaoAccess {
     @Delete
     void deletePlatte(Platte platte);
 
-
-
-   /* @Query("SELECT * FROM Platte WHERE band LIKE band")
-    Platte findPlatteByBand(String plattenID);
-    /Kann man hier auch PlattenArrays mit allen Platten zurückgeben lassen, wenn ja, drop nen Kommentar ;)
-
-    @Query("SELECT * FROM Platte WHERE year LIKE year")
-    Platte findPlatteByYear(String plattenID);*/
+    @Delete
+    void deleteAll(List<Platte>lib);
 
 
 

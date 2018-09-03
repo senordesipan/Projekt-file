@@ -35,9 +35,10 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:fontFamily="@font/amatica_sc_bold"
         android:text="TextView"
         android:textColor="@android:color/holo_blue_dark"
-        android:textSize="24sp"
+        android:textSize="27sp"
         android:typeface="normal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
@@ -63,6 +64,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:fontFamily="@font/amatica_sc_bold"
         android:text="TextView"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -76,6 +78,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:fontFamily="@font/amatica_sc_bold"
         android:text="TextView"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -89,6 +92,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:fontFamily="@font/amatica_sc_bold"
         android:text="TextView"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -102,6 +106,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:fontFamily="@font/amatica_sc_bold"
         android:text="TextView"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -115,23 +120,36 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:fontFamily="@font/amatica_sc_bold"
         android:text="TextView"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editionView" />
 
-    <CheckBox
-        android:id="@+id/checkBox2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/favHeart"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
-        android:text="Favorite"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/locationView" />
+        app:layout_constraintTop_toBottomOf="@+id/locationView"
+        app:srcCompat="@drawable/herz" />
+    <ImageView
+        android:id="@+id/favHeartBlack"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/locationView"
+        app:srcCompat="@drawable/herz_bw" />
 
 
 </android.support.constraint.ConstraintLayout>

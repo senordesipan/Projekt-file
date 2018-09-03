@@ -1,8 +1,7 @@
 package com.example.moritzschuck.vinylz;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,7 +12,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.CheckBox;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,9 +21,10 @@ public class DetailView extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     TextView titleView, locationView, priceView, editionView, yearView, genreView;
-    ImageView coverImage;
-    CheckBox favCheck;
+    ImageView coverImage, favHeart, favHeartBlack;
+
     Platte currentVinyl;
+    ImageButton shareButton;
 
 
     @Override
@@ -33,37 +34,63 @@ public class DetailView extends AppCompatActivity
         setupUI();
         checkIntent();
         findVinyl();
-        //populateViews();
+        populateViews();
+
 
     }
 
     private void populateViews() {
-        String title = currentVinyl.getTitle() +" - "+ currentVinyl.getBand();
-        String price = currentVinyl.getPrice() + " €";
-        String edition = currentVinyl.getEdition();
-        String year = currentVinyl.getYear();
-        String genre = currentVinyl.getGenre();
-        String location = currentVinyl.getLocation();
-        String coverSrc = currentVinyl.getCoverSrc();
-        if(coverSrc!=""){
-            final Bitmap bmp = BitmapFactory.decodeFile(coverSrc);
-         new Thread(new Runnable() {
-             @Override
-             public void run() {
-                // coverImage.setImageBitmap(bmp);
-             }
-         }).start();
+        if(currentVinyl!=null) {
+            final String title = currentVinyl.getTitle() + " - " + currentVinyl.getBand();
+            final String price = "Price: " + currentVinyl.getPrice();
+            final String edition = "Edition: " + currentVinyl.getEdition();
+            final String year = "Year: " + currentVinyl.getYear();
+            final String genre = "Genre: " + currentVinyl.getGenre();
+            final String location = "Location: " + currentVinyl.getLocation();
+            final String coverSrc = currentVinyl.getCoverSrc();
+            if (coverSrc != null) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final Uri uri = Uri.parse(coverSrc);
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                coverImage.setImageURI(uri);
+                            }
+                        });
+                    }
+                }).start();
+            }
+
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(!currentVinyl.getFav()){
+                        favHeart.setVisibility(View.INVISIBLE);
+                        favHeartBlack.setVisibility(View.VISIBLE);
+                    }else {
+                        favHeart.setVisibility(View.VISIBLE);
+                        favHeartBlack.setVisibility(View.INVISIBLE);
+                    }
+                    titleView.setText(title);
+                    priceView.setText(price);
+                    editionView.setText(edition);
+                    yearView.setText(year);
+                    genreView.setText(genre);
+                    locationView.setText(location);
+                  //  shareButton.setOnClickListener(new View.OnClickListener() {
+                   //     @Override
+                     //   public void onClick(View v) {
+                      //      shareVinyl();
+                      //  }
+                   // });
+                }
+            });
 
         }
-        //Favorite heart
-
-
-        titleView.setText(title);
-        priceView.setText(price);
-        editionView.setText(edition);
-        yearView.setText(year);
-        genreView.setText(genre);
-        locationView.setText(location);
 
     }
 
@@ -106,8 +133,11 @@ public class DetailView extends AppCompatActivity
         locationView = (TextView)(findViewById(R.id.locationView));
         genreView = (TextView)(findViewById(R.id.genreView));
         editionView = (TextView)(findViewById(R.id.editionView));
-        favCheck = (CheckBox) (findViewById(R.id.switchFav));
+        favHeart = (ImageView) (findViewById(R.id.favHeart));
+        favHeartBlack = (ImageView) (findViewById(R.id.favHeartBlack));
         coverImage = (ImageView) (findViewById(R.id.detailCoverView));
+        //shareButton = (ImageButton)(findViewById(R.id.shareButton));
+
 
 
     }
@@ -141,22 +171,37 @@ public class DetailView extends AppCompatActivity
             return true;
         }
         if(id == R.id.shareVinyl){
-            Intent share = new Intent(android.content.Intent.ACTION_SEND);
-            share.setType("text/plain");
-            //share.setType("image/*");
+            shareVinyl();
+        }
+        if(id == R.id.deleteVinyl){
+            Intent intent = new Intent(DetailView.this, MainActivity.class);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    PlatteDatabase.getInstance(getApplicationContext()).daoAccess().deletePlatte(currentVinyl);
 
-            share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-
-            // Add data to the intent, the receiving app will decide
-            // what to do with it.
-            share.putExtra(Intent.EXTRA_SUBJECT, "Meine neue App: Vinylz");
-           // share.putExtra(Intent.EXTRA_STREAM, imageUri);
-            share.putExtra(Intent.EXTRA_TEXT, "Ich habe einen neuen Fund gemacht: " + currentVinyl.getTitle()+ " von " +currentVinyl.getBand() + "! Aus dem Jahr: " + currentVinyl.getYear()+".");
-
-            startActivity(Intent.createChooser(share, "Tell your Friend about your new App!"));
+                }
+            }).start();
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void shareVinyl() {
+        Intent share = new Intent(android.content.Intent.ACTION_SEND);
+        share.setType("text/plain");
+        //share.setType("image/*");
+
+        share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+
+        // Add data to the intent, the receiving app will decide
+        // what to do with it.
+        share.putExtra(Intent.EXTRA_SUBJECT, "Meine neue App: Vinylz");
+        // share.putExtra(Intent.EXTRA_STREAM, imageUri);
+        share.putExtra(Intent.EXTRA_TEXT, "Ich habe einen neuen Fund gemacht: " + currentVinyl.getTitle()+ " von " +currentVinyl.getBand() + "! Aus dem Jahr: " + currentVinyl.getYear()+".");
+
+        startActivity(Intent.createChooser(share, "Tell your Friend about your new App!"));
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -167,11 +212,10 @@ public class DetailView extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+
 
         } else if (id == R.id.nav_slideshow) {
 
-        } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
 

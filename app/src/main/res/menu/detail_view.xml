@@ -11,6 +11,9 @@
         android:id="@+id/shareVinyl"
         android:title="@string/share_vinyl"
         />
+    <item
+        android:id="@+id/deleteVinyl"
+        android:title="Detele Vinyl"/>
 
 
 </menu>
