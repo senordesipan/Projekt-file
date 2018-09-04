@@ -7,20 +7,24 @@
         <item
             android:id="@+id/nav_camera"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Add a new find" />
+            android:title="@string/add_a_new_find"
+            />
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Show all the collection" />
+            android:title="@string/show_all_the_collection"
+            />
 
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="@string/communicate">
         <menu>
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_menu_share"
-                android:title="Tell your friends about the app" />
+                android:title="@string/tell_your_friends_about_the_app"
+
+                />
         </menu>
     </item>
 

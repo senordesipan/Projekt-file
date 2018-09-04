@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static android.widget.Toast.LENGTH_SHORT;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     ImageButton addButton, nameButton, locationButton, favoriteButton;
     Button searchButton;
@@ -90,9 +92,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String searchText = searchField.getText().toString();
-                executeSearch(searchText);
-                populateListView();
+                if(!searchField.getText().toString().equals("")) {
+                    String searchText = searchField.getText().toString();
+                    executeSearch(searchText);
+                    populateListView();
+                }else {
+                    Toast.makeText(getApplicationContext(),"Enter search text", LENGTH_SHORT).show();
+                }
             }
         });
         locationButton.setOnClickListener(new View.OnClickListener() {
@@ -325,6 +331,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 @Override
                                 public void run() {
                                     final Uri uri = Uri.parse(currentVinyl.getCoverSrc());
+
+                                    Log.d("**********DEBUG", uri.toString());
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -338,6 +346,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             }).start();
                         }
 
+
                         // title:
                         TextView makeText = (TextView) itemView.findViewById(R.id.vName);
                         if (currentVinyl.getTitle() != null) {
@@ -350,7 +359,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                         // price:
                         TextView priceText = (TextView) itemView.findViewById(R.id.vPrice);
-                        if (currentVinyl.getPrice() == "") {
+                        if (null == currentVinyl.getPrice()) {
                             priceText.setText("Unknown Price");
                         } else {
                             priceText.setVisibility(View.VISIBLE);
@@ -364,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         yearText.setText(currentVinyl.getYear());
                     } else {
 
-                        Toast.makeText(getApplicationContext(), "Nothing to show", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Nothing to show", LENGTH_SHORT).show();
 
                     }
 
@@ -373,5 +382,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return itemView;
             }
         }
+
     }
 

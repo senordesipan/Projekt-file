@@ -212,18 +212,27 @@ public class DetailView extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
-
-
+            Intent intent = new Intent(getApplicationContext(), EditActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_slideshow) {
-
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_share) {
+            Intent share = new Intent(android.content.Intent.ACTION_SEND);
+            share.setType("text/plain");
+            share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 
-        } //else if (id == R.id.nav_send) {
+            // Add data to the intent, the receiving app will decide
+            // what to do with it.
+            share.putExtra(Intent.EXTRA_SUBJECT, "Meine neue App: Vinylz");
+            share.putExtra(Intent.EXTRA_TEXT, "Mit dieser App kannst du alle deine Platten Teilen! Ist das nicht super!");
 
-        //}
+            startActivity(Intent.createChooser(share, "Tell your Friend about your new App!"));
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

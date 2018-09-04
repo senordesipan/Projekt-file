@@ -10,4 +10,9 @@
     <string name="title_activity_detail_view">DetailView</string>
     <string name="share_vinyl">Share Vinyl</string>
     <string name="reset_library">Reset Library</string>
+    <string name="add_a_new_find">Add a new find</string>
+    <string name="show_all_the_collection">Show all the collection</string>
+    <string name="tell_your_friends_about_the_app">Tell your friends about the app</string>
+    <string name="communicate">Communicate</string>
+    <string name="detele_vinyl">Detele Vinyl</string>
 </resources>

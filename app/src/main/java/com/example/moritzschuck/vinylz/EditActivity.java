@@ -149,7 +149,6 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
                         startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
                     }
                 }
-
             }
 
             private File createImageFile() throws IOException {
@@ -266,13 +265,6 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
                 return null;
             }
 
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-
         }
         return null;
     }
@@ -306,6 +298,7 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
            //Pfad abgreifen?
             imagePath = selectedImageUri.toString();
             mImageView.setImageURI(selectedImageUri);
+
         }
             }
 
