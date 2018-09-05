@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ImageButton addButton, nameButton, locationButton, favoriteButton;
     Button searchButton;
     EditText searchField;
+
     int searchRequest = 2;
 
     private List<Platte> myVinyl = new ArrayList<Platte>();
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         addButton = (ImageButton) (findViewById(R.id.addButton));
         searchButton = (Button) (findViewById(R.id.searchButton));
         searchField = (EditText) (findViewById(R.id.searchField));
+
 
         favoriteButton = (findViewById(R.id.favoriteButton));
         locationButton = (findViewById(R.id.locationButton));
@@ -106,6 +108,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
                 searchField.setHint("Search by Location");
                 searchRequest = 1;
+                try {
+                    exampleVinylList();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                populateListView();
             }
         });
         nameButton.setOnClickListener(new View.OnClickListener() {
@@ -165,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         new Thread(new Runnable() {
             @Override
             public void run() {
-
                 myVinyl = PlatteDatabase.getInstance(getApplicationContext()).daoAccess().findFavs(true);
 
             }
@@ -192,8 +201,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void populateListView() {
 
         final ArrayAdapter<Platte> adapter = new MyListAdapter(myVinyl);
-        final ListView list = (ListView) findViewById(R.id.list);
+        final ListView list =  findViewById(R.id.list);
         list.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -202,9 +212,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.d("*****DEBUGG", String.valueOf(myVinyl.get(position).getPlattenID()));
-                        intent.putExtra("vKey", myVinyl.get(position).getPlattenID());
-                        startActivity(intent);
+                        if(myVinyl.size()>position) {
+                            Log.d("*****DEBUGG", String.valueOf(myVinyl.get(position).getPlattenID()));
+                            intent.putExtra("vKey", myVinyl.get(position).getPlattenID());
+                            startActivity(intent);
+                        }
                     }
                 }).start();
             }
@@ -312,7 +324,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @NonNull
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, final View convertView, ViewGroup parent) {
             // Make sure we have a view to work with (may have been given null)
             View itemView = convertView;
             if (itemView == null) {
@@ -320,26 +332,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
             // Find the vinyl to work with.
-            if(!myVinyl.isEmpty()) {
+            if(myVinyl.size()>position) {
                 if (myVinyl.get(position) != null) {
                     final Platte currentVinyl = myVinyl.get(position);
                     if (currentVinyl != null) {
 
                         // Fill the view
+
+
                         if (currentVinyl.getCoverSrc() != null) {
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
                                     final Uri uri = Uri.parse(currentVinyl.getCoverSrc());
-
                                     Log.d("**********DEBUG", uri.toString());
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            if(uri !=null) {
-                                                ImageView imageView = findViewById(R.id.vPicture);
-                                                imageView.setImageURI(uri);
-                                            }
+                                            ImageView vPicture=   findViewById(R.id.vPicture);
+                                            vPicture.setImageURI(uri);
+
+
                                         }
                                     });
                                 }

@@ -162,7 +162,8 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
                 );
 
                 // Save a file: path for use with ACTION_VIEW intents
-                imagePath = image.getAbsolutePath();
+                Uri uri = Uri.parse(image.getAbsolutePath());
+                imagePath = uri.toString();
                 return image;
             }
 
@@ -289,7 +290,7 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
             //Thumbnail bekommen und anzeigen?
            Bitmap imageBitmap = BitmapFactory.decodeFile(imagePath, null);
             mImageView.setImageBitmap(imageBitmap);
-            galleryAddPic(imagePath);
+
             Log.d("****DEBUG",imagePath);
 
         }
@@ -302,13 +303,6 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
         }
             }
 
-    private void galleryAddPic(String imagePath) {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(imagePath);
-        Uri contentUri = Uri.fromFile(f);
-        mediaScanIntent.setData(contentUri);
-        this.sendBroadcast(mediaScanIntent);
-    }
         }
 
 
