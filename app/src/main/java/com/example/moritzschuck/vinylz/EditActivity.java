@@ -198,6 +198,7 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+
     private void initToolbar() {
         toolbar = (Toolbar) (findViewById(R.id.toolbar));
         setSupportActionBar(toolbar);
@@ -234,9 +235,7 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private String populateAddress() {
-
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
         double latitude;
         double longitude;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -262,7 +261,7 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
                 return city;
 
             } else {
-                Toast.makeText(getApplicationContext(), "Der Standort konnte nicht lokalisiert werden", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "The location could not be located", Toast.LENGTH_SHORT).show();
                 return null;
             }
 

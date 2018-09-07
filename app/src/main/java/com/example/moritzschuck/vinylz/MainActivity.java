@@ -341,23 +341,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
                         if (currentVinyl.getCoverSrc() != null) {
+                            final View finalItemView = itemView;
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
                                     final Uri uri = Uri.parse(currentVinyl.getCoverSrc());
                                     Log.d("**********DEBUG", uri.toString());
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            ImageView vPicture=   findViewById(R.id.vPicture);
-                                            vPicture.setImageURI(uri);
-
-
-                                        }
-                                    });
+                                    if (finalItemView.hasWindowFocus()) {
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                ImageView vPicture = findViewById(R.id.vPicture);
+                                                vPicture.setImageURI(uri);
+                                            }
+                                        });
+                                    }
                                 }
                             }).start();
                         }
+
 
 
                         // title:

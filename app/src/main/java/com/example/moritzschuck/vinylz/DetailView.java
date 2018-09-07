@@ -192,11 +192,7 @@ public class DetailView extends AppCompatActivity
         Intent share = new Intent(android.content.Intent.ACTION_SEND);
         share.setType("text/plain");
         //share.setType("image/*");
-
         share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-
-        // Add data to the intent, the receiving app will decide
-        // what to do with it.
         share.putExtra(Intent.EXTRA_SUBJECT, "Meine neue App: Vinylz");
         // share.putExtra(Intent.EXTRA_STREAM, imageUri);
         share.putExtra(Intent.EXTRA_TEXT, "Ich habe einen neuen Fund gemacht: " + currentVinyl.getTitle()+ " von " +currentVinyl.getBand() + "! Aus dem Jahr: " + currentVinyl.getYear()+".");
