@@ -1,6 +1,7 @@
 package com.example.moritzschuck.vinylz;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -179,13 +180,18 @@ public class DetailView extends AppCompatActivity
                 @Override
                 public void run() {
                     PlatteDatabase.getInstance(getApplicationContext()).daoAccess().deletePlatte(currentVinyl);
-
                 }
             }).start();
+            playTrashSound();
             startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void playTrashSound() {
+        MediaPlayer media = MediaPlayer.create(this, R.raw.trash);
+        media.start();
     }
 
     private void shareVinyl() {

@@ -46,8 +46,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupUi();
-
-
         try {
             exampleVinylList();
         }
@@ -58,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initListeners();
 
     }
+
 
     private void setupUi() {
         addButton = (ImageButton) (findViewById(R.id.addButton));

@@ -10,6 +10,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -20,7 +21,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -67,31 +67,7 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.edit_main);
         initToolbar();
         setupUI();
-
-        //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        //ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-        //        this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        //drawer.addDrawerListener(toggle);
-        //toggle.syncState();
-
-        locationText = (EditText)(findViewById(R.id.locationText));
-        locationButton = (ImageButton) (findViewById(R.id.locationFinder));
-        locationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               location =  populateAddress();
-            }
-        });
-
-        coverLoad = (ImageButton) (findViewById(R.id.uploadButton));
-        coverLoad.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                chooseImageFromGallery(v);
-
-            }
-        });
+        setupListeners();
 
         coverLoadCamera = (ImageButton) (findViewById(R.id.coverLoadCamera));
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
@@ -171,7 +147,7 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
         });
 
 
-        addButton = (Button) (findViewById(R.id.vinylAdd));
+
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -188,6 +164,7 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
                     addVinyl(title, bandname, year, price, edition, genre, imagePath,location, isFavorite);
 
                     Toast.makeText(getApplicationContext(), "Successfully added new Vinyl in Database", Toast.LENGTH_SHORT).show();
+                    playOpeningSound();
                     Intent intent = new Intent(EditActivity.this, MainActivity.class);
                     startActivity(intent);
                 }else{
@@ -197,7 +174,6 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
         });
 
     }
-
 
     private void initToolbar() {
         toolbar = (Toolbar) (findViewById(R.id.toolbar));
@@ -212,8 +188,26 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
         editYear = (EditText)(findViewById(R.id.yearEdit));
         editEdition = (EditText)(findViewById(R.id.editionEdit));
         editGenre = (EditText)(findViewById(R.id.genreEdit));
+        locationText = (EditText)(findViewById(R.id.locationText));
+        locationButton = (ImageButton) (findViewById(R.id.locationFinder));
+        coverLoad = (ImageButton) (findViewById(R.id.uploadButton));
+        addButton = (Button) (findViewById(R.id.vinylAdd));
     }
+    private void setupListeners(){
+        locationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                location =  populateAddress();
+            }
+        });
+        coverLoad.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chooseImageFromGallery(v);
 
+            }
+        });
+        }
 
     private void addVinyl(final String title, final String bandname, final String year, final String price, final String edition, final String genre, final String imagePath, final String location, final boolean isFavorite) {
         new Thread(new Runnable() {
@@ -233,6 +227,11 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
             }
         }).start();
     }
+    private void playOpeningSound() {
+        final MediaPlayer mediaPlay = MediaPlayer.create(this, R.raw.start);
+        mediaPlay.start();
+    }
+
 
     private String populateAddress() {
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -289,8 +288,6 @@ public class EditActivity extends AppCompatActivity implements NavigationView.On
             //Thumbnail bekommen und anzeigen?
            Bitmap imageBitmap = BitmapFactory.decodeFile(imagePath, null);
             mImageView.setImageBitmap(imageBitmap);
-
-            Log.d("****DEBUG",imagePath);
 
         }
         else if(requestCode==REQUEST_GALLERY && resultCode == RESULT_OK){
